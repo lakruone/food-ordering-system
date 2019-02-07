@@ -249,4 +249,6 @@ router.get('/deleteProduct/:id',Token.verifyToken,(req,res) =>{
     }
   });
 });
+
+
 module.exports = router;
