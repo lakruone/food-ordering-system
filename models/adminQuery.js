@@ -96,3 +96,62 @@ module.exports.saveProduct = (catagoryID,productName,price,qtyAvailable,descript
     }
   });
 }
+
+module.exports.getProduct = (productID, callback) =>{
+  const qry = "select productName,price,description from product where productID=?";
+  pool.query(qry,[productID], (err,result) =>{
+    if (err){
+      return callback(err,null);
+    }
+    if(result){
+      return callback(null,result[0]);
+    }
+  });
+}
+
+module.exports.editProduct = (productID,addQty,productName,price,description,imgDetail, callback) => {
+
+  const qry = "update product set qtyAvailable=qtyAvailable +?,productName=?,price=?,description=? where productID=? ";
+
+  pool.query(qry,[addQty,productName,price,description,productID],(err,result) => {
+    if (err){
+      return callback(err,null);
+    }
+    else{
+      console.log(result);
+      return callback(null,true);
+    }
+  });
+}
+
+module.exports.feedbacks = (productID, callback) =>{
+  const qry = "select * from feedback where productID=?";
+  pool.query(qry,[productID], (err,result) =>{
+    if (err){
+
+      return callback(err,null);
+    }else{
+      return callback(null,result);
+    }
+  });
+}
+
+module.exports.deleteProduct = (productID, callback) =>{
+  const qry1 = "delete from feedback where productID=?";
+  const qry2 = "delete from product where productID=?";
+  pool.query(qry1,[productID], (err,result1) =>{
+    if (err){
+      return callback(err,null);
+    }else{
+      pool.query(qry2,[productID], (err,result2) =>{
+        if (err){
+          return callback(err,null);
+        }else{
+          //console.log(result2)
+          return callback(null,true);
+        }
+      });
+
+    }
+  });
+}

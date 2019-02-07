@@ -103,7 +103,7 @@ router.post('/addCatagory',Token.verifyToken,(req,res) =>{
   });
 });
 
-//product details id=catagoryID  ----(admin/products/:id)
+//get all products' details id=catagoryID  ----(admin/products/:id)
 router.get('/products/:id',Token.verifyToken,(req,res) =>{
   jwt.verify(req.token, 'mySecret', (err, decodeData) =>{
     if(err){
@@ -154,4 +154,99 @@ router.post('/addProduct/:id',Token.verifyToken,(req,res) =>{
   });
 });
 
+//send product details to edit product
+router.get("/editProduct/:id",Token.verifyToken,(req,res) => {
+  jwt.verify(req.token, 'mySecret', (err, decodeData) =>{
+    if(err){
+      res.status(403).json({data:"forbidden"})
+    }else{
+
+      const productID = req.params.id;
+
+      User.getProduct(productID, (err,result)=>{
+        if(err){
+          console.log(err);
+        }else{
+        console.log(result);
+        return  res.status(200).json({result});
+
+        }
+      });
+
+    }
+  })
+});
+
+//edit products --(admin/editProduct/:id)
+router.put("/editProduct/:id",Token.verifyToken,(req,res) => {
+  jwt.verify(req.token, 'mySecret', (err, decodeData) =>{
+    if(err){
+      res.status(403).json({data:"forbidden"})
+    }else{
+
+      const productID = req.params.id;
+      const addQty = req.body.addQty;
+      const productName = req.body.productName;
+      const price = req.body.price;
+      const description = req.body.description;
+      const imgDetail =  "image details"   //req.body.imgDetail;
+
+
+      User.editProduct(productID,addQty,productName,price,description,imgDetail, (err,result)=>{
+        if(err){
+          console.log(err);
+        }else{
+          console.log("product edited succesfully");
+        return  res.status(200).json({message:"product edited succesfully"});
+
+        }
+      });
+
+    }
+  })
+});
+
+//get feedback id=productID
+router.get('/feedback/:id',Token.verifyToken,(req,res) =>{
+  jwt.verify(req.token, 'mySecret', (err, decodeData) =>{
+    if(err){
+      res.status(403).json({data:"forbidden"})
+    }else{
+      const productID = req.params.id;
+      //console.log(productID);
+      User.feedbacks(productID,(err,result) =>{
+        if(err){
+          console.log("err");
+        }
+        else{
+          console.log(result);
+        return  res.status(200).json({result});
+
+        }
+      });
+    }
+  });
+});
+
+//delete product  ---(admin/deleteProduct/:id)
+router.get('/deleteProduct/:id',Token.verifyToken,(req,res) =>{
+  jwt.verify(req.token, 'mySecret', (err, decodeData) =>{
+    if(err){
+      res.status(403).json({data:"forbidden"})
+    }else{
+      const productID = req.params.id;
+      //console.log(productID);
+      User.deleteProduct(productID,(err,result) =>{
+        if(err){
+          console.log(err);
+        }
+        else{
+          console.log("deleted succcesfully");
+        return  res.status(200).json({message:"product deleted succesfully"});
+
+        }
+      });
+    }
+  });
+});
 module.exports = router;
